@@ -20,10 +20,7 @@ export async function generateConversationTitle(data: {
                 content: [
                     {
                         type: "text",
-                        text: "Generate a concise 6-word title for this conversation. Return ONLY the title, no quotes or punctuation.
-
-User: " + firstMessage.slice(0, 200) + "
-Assistant: " + firstResponse.slice(0, 200)
+                        text: `Generate a concise 6-word title for this conversation. Return ONLY the title, no quotes or punctuation.\n\nUser: ${firstMessage.slice(0, 200)}\nAssistant: ${firstResponse.slice(0, 200)}`
                     }
                 ],
             }],
