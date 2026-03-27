@@ -6,6 +6,7 @@
         "dev:server": "pnpm --filter server dev",
         "dev:worker": "pnpm --filter worker dev",
         "dev:web": "pnpm --filter web-client dev",
-        "build": "pnpm --filter @research/common build && pnpm --filter server build && pnpm --filter worker build && pnpm --filter web-client build"
+        "build": "sh build.sh",
+        "start": "sh start.sh"
     }
 }
