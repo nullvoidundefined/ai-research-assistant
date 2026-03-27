@@ -1,0 +1,61 @@
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: var(--foreground-muted);
+}
+
+.shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    background: var(--background);
+    gap: 2rem;
+}
+
+.navBrand {
+    font-weight: 700;
+    font-size: 1rem;
+
+    a {
+        color: var(--foreground);
+    }
+}
+
+.navLinks {
+    display: flex;
+    gap: 1.5rem;
+
+    a {
+        font-size: 0.875rem;
+        color: var(--foreground-muted);
+        transition: color 0.2s;
+
+        &:hover {
+            color: var(--foreground);
+        }
+    }
+}
+
+.navUser {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: var(--foreground-muted);
+}
+
+.main {
+    flex: 1;
+    padding: 2rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}

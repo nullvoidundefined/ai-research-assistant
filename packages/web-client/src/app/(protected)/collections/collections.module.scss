@@ -1,0 +1,117 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+}
+
+.createBtn {
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: background 0.2s;
+
+    &:hover {
+        background: var(--accent-hover);
+    }
+}
+
+.createForm {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    input {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        outline: none;
+        flex: 1;
+        max-width: 300px;
+
+        &:focus { border-color: var(--accent); }
+    }
+
+    button {
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 500;
+
+        &[type='submit'] {
+            background: var(--accent);
+            color: white;
+            &:disabled { opacity: 0.6; }
+        }
+
+        &[type='button'] {
+            border: 1px solid var(--border);
+            color: var(--foreground-muted);
+        }
+    }
+}
+
+.loading,
+.empty {
+    color: var(--foreground-muted);
+    font-size: 0.875rem;
+}
+
+.list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: background 0.2s;
+
+    &:hover { background: var(--surface); }
+}
+
+.itemLink {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    color: var(--foreground);
+
+    strong { font-size: 0.9375rem; }
+    span { font-size: 0.8125rem; color: var(--foreground-muted); }
+}
+
+.publicBadge {
+    color: var(--accent) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600;
+}
+
+.deleteBtn {
+    padding: 0.5rem 0.75rem;
+    color: var(--foreground-muted);
+    font-size: 1.125rem;
+    transition: color 0.2s;
+
+    &:hover { color: var(--danger); }
+}

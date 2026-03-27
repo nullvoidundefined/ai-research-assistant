@@ -1,0 +1,11 @@
+{
+    "name": "ai-research-assistant",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev:server": "pnpm --filter server dev",
+        "dev:worker": "pnpm --filter worker dev",
+        "dev:web": "pnpm --filter web-client dev",
+        "build": "pnpm --filter @research/common build && pnpm --filter server build && pnpm --filter worker build && pnpm --filter web-client build"
+    }
+}

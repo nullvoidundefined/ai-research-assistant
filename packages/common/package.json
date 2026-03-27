@@ -1,0 +1,14 @@
+{
+    "name": "@research/common",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup src/index.ts --dts",
+        "dev": "tsup src/index.ts --dts --watch"
+    },
+    "devDependencies": {
+        "typescript": "^5.4.5",
+        "tsup": "^8.0.2"
+    }
+}
