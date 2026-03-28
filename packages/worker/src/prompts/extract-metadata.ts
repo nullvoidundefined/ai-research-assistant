@@ -1,5 +1,5 @@
 export function buildExtractMetadataPrompt(content: string): string {
-    return `Extract metadata from this content and return ONLY valid JSON with these fields:
+  return `Extract metadata from this content and return ONLY valid JSON with these fields:
 {
   "title": "string or null",
   "author": "string or null",

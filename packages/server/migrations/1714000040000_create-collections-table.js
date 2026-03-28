@@ -1,7 +1,7 @@
 export const shorthands = undefined;
 
 export async function up(pgm) {
-    pgm.sql(`
+  pgm.sql(`
         CREATE TABLE collections (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -14,7 +14,7 @@ export async function up(pgm) {
         )
     `);
 
-    pgm.sql(`
+  pgm.sql(`
         CREATE TABLE collection_sources (
             collection_id UUID NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
             source_id UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
@@ -23,17 +23,19 @@ export async function up(pgm) {
         )
     `);
 
-    pgm.sql(`
+  pgm.sql(`
         CREATE TRIGGER set_collections_updated_at
         BEFORE UPDATE ON collections
         FOR EACH ROW EXECUTE FUNCTION set_updated_at()
     `);
 
-    pgm.sql("CREATE INDEX ON collections(user_id)");
-    pgm.sql("CREATE INDEX ON collections(share_token) WHERE share_token IS NOT NULL");
+  pgm.sql('CREATE INDEX ON collections(user_id)');
+  pgm.sql(
+    'CREATE INDEX ON collections(share_token) WHERE share_token IS NOT NULL',
+  );
 }
 
 export async function down(pgm) {
-    pgm.sql("DROP TABLE IF EXISTS collection_sources CASCADE");
-    pgm.sql("DROP TABLE IF EXISTS collections CASCADE");
+  pgm.sql('DROP TABLE IF EXISTS collection_sources CASCADE');
+  pgm.sql('DROP TABLE IF EXISTS collections CASCADE');
 }

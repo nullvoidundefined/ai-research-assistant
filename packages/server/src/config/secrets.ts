@@ -1,14 +1,14 @@
-import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
-const PROJECT_ID = process.env.GCP_PROJECT_ID ?? "67254912843";
+const PROJECT_ID = process.env.GCP_PROJECT_ID ?? '67254912843';
 
 // Secrets to fetch from GCP Secret Manager in production.
 // Key = process.env key to populate, value = GCP secret name.
 const SECRET_MAP: Record<string, string> = {
-  ANTHROPIC_API_KEY: "ANTHROPIC_API_KEY",
-  VOYAGE_API_KEY: "VOYAGE_API_KEY",
-  SESSION_SECRET: "SESSION_SECRET",
-  CLOUDFLARE_R2_SECRET_ACCESS_KEY: "CLOUDFLARE_R2_SECRET_ACCESS_KEY",
+  ANTHROPIC_API_KEY: 'ANTHROPIC_API_KEY',
+  VOYAGE_API_KEY: 'VOYAGE_API_KEY',
+  SESSION_SECRET: 'SESSION_SECRET',
+  CLOUDFLARE_R2_SECRET_ACCESS_KEY: 'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
 };
 
 async function fetchSecret(
@@ -21,12 +21,12 @@ async function fetchSecret(
 }
 
 export async function loadSecrets(): Promise<void> {
-  if (process.env.NODE_ENV !== "production") return;
+  if (process.env.NODE_ENV !== 'production') return;
 
   const saJson = process.env.GCP_SA_JSON;
   if (!saJson) {
     console.warn(
-      "GCP_SA_JSON not set — using Railway environment variables directly",
+      'GCP_SA_JSON not set — using Railway environment variables directly',
     );
     return;
   }

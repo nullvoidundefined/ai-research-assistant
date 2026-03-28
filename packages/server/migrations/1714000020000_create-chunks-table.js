@@ -1,7 +1,7 @@
 export const shorthands = undefined;
 
 export async function up(pgm) {
-    pgm.sql(`
+  pgm.sql(`
         CREATE TABLE chunks (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             source_id UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
@@ -14,11 +14,13 @@ export async function up(pgm) {
         )
     `);
 
-    pgm.sql("CREATE INDEX ON chunks(source_id)");
-    pgm.sql("CREATE INDEX ON chunks(user_id)");
-    pgm.sql("CREATE INDEX ON chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)");
+  pgm.sql('CREATE INDEX ON chunks(source_id)');
+  pgm.sql('CREATE INDEX ON chunks(user_id)');
+  pgm.sql(
+    'CREATE INDEX ON chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)',
+  );
 }
 
 export async function down(pgm) {
-    pgm.sql("DROP TABLE IF EXISTS chunks CASCADE");
+  pgm.sql('DROP TABLE IF EXISTS chunks CASCADE');
 }

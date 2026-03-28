@@ -1,148 +1,154 @@
 .page {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-    }
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
 }
 
 .addBtn {
-    padding: 0.5rem 1rem;
-    background: var(--accent);
-    color: white;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: background 0.2s;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: background 0.2s;
 
-    &:hover {
-        background: var(--accent-hover);
-        color: white;
-    }
+  &:hover {
+    background: var(--accent-hover);
+    color: white;
+  }
 }
 
 .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
 .stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .statValue {
-    font-size: 2rem;
-    font-weight: 700;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .statLabel {
-    font-size: 0.875rem;
-    color: var(--foreground-muted);
+  font-size: 0.875rem;
+  color: var(--foreground-muted);
 }
 
 .section {
-    h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
 }
 
 .empty {
-    color: var(--foreground-muted);
-    font-size: 0.875rem;
+  color: var(--foreground-muted);
+  font-size: 0.875rem;
 }
 
 .recentList {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .recentItem {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
 }
 
 .sourceType {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--foreground-muted);
-    min-width: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--foreground-muted);
+  min-width: 40px;
 }
 
 .sourceTitle {
-    flex: 1;
-    font-size: 0.875rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  flex: 1;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .statusDot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--foreground-muted);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--foreground-muted);
 
-    &[data-status='ready'] { background: var(--status-ready); }
-    &[data-status='failed'] { background: var(--status-failed); }
-    &[data-status='pending'],
-    &[data-status='fetching'],
-    &[data-status='chunking'],
-    &[data-status='embedding'] { background: var(--status-pending); }
+  &[data-status='ready'] {
+    background: var(--status-ready);
+  }
+  &[data-status='failed'] {
+    background: var(--status-failed);
+  }
+  &[data-status='pending'],
+  &[data-status='fetching'],
+  &[data-status='chunking'],
+  &[data-status='embedding'] {
+    background: var(--status-pending);
+  }
 }
 
 .actions {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 .actionCard {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 1.25rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  transition: background 0.2s;
+
+  strong {
+    font-size: 1rem;
+  }
+
+  span {
+    font-size: 0.875rem;
+    color: var(--foreground-muted);
+  }
+
+  &:hover {
+    background: var(--surface-hover);
     color: var(--foreground);
-    transition: background 0.2s;
-
-    strong {
-        font-size: 1rem;
-    }
-
-    span {
-        font-size: 0.875rem;
-        color: var(--foreground-muted);
-    }
-
-    &:hover {
-        background: var(--surface-hover);
-        color: var(--foreground);
-    }
+  }
 }

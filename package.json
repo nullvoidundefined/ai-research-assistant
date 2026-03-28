@@ -7,6 +7,10 @@
         "dev:worker": "pnpm --filter worker dev",
         "dev:web": "pnpm --filter web-client dev",
         "build": "sh build.sh",
-        "start": "sh start.sh"
+        "start": "sh start.sh",
+        "lint": "pnpm -r run lint",
+        "lint:fix": "pnpm -r run lint:fix",
+        "format": "pnpm -r run format",
+        "format:check": "pnpm -r run format:check"
     }
 }

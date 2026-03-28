@@ -9,9 +9,9 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export async function up(pgm) {
-    pgm.sql("CREATE EXTENSION IF NOT EXISTS vector;");
+  pgm.sql('CREATE EXTENSION IF NOT EXISTS vector;');
 
-    pgm.sql(`
+  pgm.sql(`
         CREATE TABLE users (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             email VARCHAR(255) UNIQUE NOT NULL,
@@ -22,7 +22,7 @@ export async function up(pgm) {
         )
     `);
 
-    pgm.sql(`
+  pgm.sql(`
         CREATE OR REPLACE FUNCTION set_updated_at()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -32,7 +32,7 @@ export async function up(pgm) {
         $$ LANGUAGE plpgsql
     `);
 
-    pgm.sql(`
+  pgm.sql(`
         CREATE TRIGGER set_users_updated_at
         BEFORE UPDATE ON users
         FOR EACH ROW EXECUTE FUNCTION set_updated_at()
@@ -45,7 +45,7 @@ export async function up(pgm) {
  * @returns {Promise<void> | void}
  */
 export async function down(pgm) {
-    pgm.sql("DROP TABLE IF EXISTS users CASCADE");
-    pgm.sql("DROP FUNCTION IF EXISTS set_updated_at CASCADE");
-    pgm.sql("DROP EXTENSION IF EXISTS vector");
+  pgm.sql('DROP TABLE IF EXISTS users CASCADE');
+  pgm.sql('DROP FUNCTION IF EXISTS set_updated_at CASCADE');
+  pgm.sql('DROP EXTENSION IF EXISTS vector');
 }

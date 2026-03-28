@@ -1,36 +1,36 @@
 .container {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .searchInput {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    outline: none;
-    min-width: 220px;
-    flex: 1;
-    transition: border-color 0.2s;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  outline: none;
+  min-width: 220px;
+  flex: 1;
+  transition: border-color 0.2s;
 
-    &:focus {
-        border-color: var(--accent);
-    }
+  &:focus {
+    border-color: var(--accent);
+  }
 }
 
 .select {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    outline: none;
-    background: var(--background);
-    cursor: pointer;
-    transition: border-color 0.2s;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  outline: none;
+  background: var(--background);
+  cursor: pointer;
+  transition: border-color 0.2s;
 
-    &:focus {
-        border-color: var(--accent);
-    }
+  &:focus {
+    border-color: var(--accent);
+  }
 }

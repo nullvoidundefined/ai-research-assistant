@@ -1,7 +1,7 @@
 export const shorthands = undefined;
 
 export async function up(pgm) {
-    pgm.sql(`
+  pgm.sql(`
         CREATE TABLE tags (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -12,7 +12,7 @@ export async function up(pgm) {
         )
     `);
 
-    pgm.sql(`
+  pgm.sql(`
         CREATE TABLE source_tags (
             source_id UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
             tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
@@ -20,10 +20,10 @@ export async function up(pgm) {
         )
     `);
 
-    pgm.sql("CREATE INDEX ON tags(user_id)");
+  pgm.sql('CREATE INDEX ON tags(user_id)');
 }
 
 export async function down(pgm) {
-    pgm.sql("DROP TABLE IF EXISTS source_tags CASCADE");
-    pgm.sql("DROP TABLE IF EXISTS tags CASCADE");
+  pgm.sql('DROP TABLE IF EXISTS source_tags CASCADE');
+  pgm.sql('DROP TABLE IF EXISTS tags CASCADE');
 }
