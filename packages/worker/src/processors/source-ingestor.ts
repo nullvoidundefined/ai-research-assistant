@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { VoyageAIClient } from "voyageai";
+import voyageaiPkg from "voyageai";
+
+const { VoyageAIClient } = voyageaiPkg as typeof import("voyageai");
 import { z } from "zod";
 import { chunk } from "@research/common";
 import { query } from "app/db/pool/pool.js";

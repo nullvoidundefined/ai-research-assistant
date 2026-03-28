@@ -1,5 +1,6 @@
-import { VoyageAIClient } from "voyageai";
+import voyageaiPkg from "voyageai";
 
+const { VoyageAIClient } = voyageaiPkg as typeof import("voyageai");
 const voyage = new VoyageAIClient({ apiKey: process.env.VOYAGE_API_KEY });
 
 export async function embed(
