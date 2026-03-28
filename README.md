@@ -5,7 +5,7 @@ A compound AI application that saves articles, papers, bookmarks, and notes, ind
 ## Architecture
 
 ```
-application/
+ai-research-assistant/
 ├── packages/common/       # Shared chunker + types (@research/common)
 ├── packages/server/       # Express 5 + TypeScript REST API
 ├── packages/worker/       # BullMQ background ingest worker
