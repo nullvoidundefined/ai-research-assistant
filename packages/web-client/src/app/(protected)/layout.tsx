@@ -55,6 +55,8 @@ export default function ProtectedLayout({
           <Link href='/sources'>Sources</Link>
           <Link href='/collections'>Collections</Link>
           <Link href='/chat'>Chat</Link>
+          <Link href='/documents/summary'>Summary</Link>
+          <Link href='/documents/technical-overview'>Technical Overview</Link>
         </div>
         <div className={styles.navUser}>
           <span>{data.user.name ?? data.user.email}</span>
