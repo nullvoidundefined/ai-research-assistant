@@ -14,6 +14,7 @@ import tagsRouter from "app/routes/tags.js";
 import collectionsRouter from "app/routes/collections.js";
 import chatRouter from "app/routes/chat.js";
 import conversationsRouter from "app/routes/conversations.js";
+import { query } from "app/db/pool/pool.js";
 import { getPublicCollection } from "app/handlers/collections/collections.js";
 
 const app = express();
@@ -41,7 +42,16 @@ app.use(
 app.use(requestLogger);
 
 app.get("/health", (_req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+    res.status(200).json({ status: "ok" });
+});
+
+app.get("/health/ready", async (_req, res) => {
+    try {
+        await query("SELECT 1");
+        res.status(200).json({ status: "ok", db: "connected" });
+    } catch {
+        res.status(503).json({ status: "degraded", db: "disconnected" });
+    }
 });
 
 app.use("/auth", authRouter);
