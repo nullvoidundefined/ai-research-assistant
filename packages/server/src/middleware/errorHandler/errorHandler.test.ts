@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
-import type { NextFunction, Request, Response } from 'express';
-import { errorHandler } from './errorHandler.js';
 import { ApiError } from 'app/utils/ApiError.js';
+import type { NextFunction, Request, Response } from 'express';
+import { describe, expect, it, vi } from 'vitest';
+
+import { errorHandler } from './errorHandler.js';
 
 vi.mock('app/utils/logs/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },

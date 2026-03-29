@@ -1,4 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import {
+  deleteFile,
+  downloadFile,
+  getPresignedUrl,
+  uploadFile,
+} from './r2.service.js';
 
 const { mockSend } = vi.hoisted(() => ({
   mockSend: vi.fn(),
@@ -31,13 +38,6 @@ vi.mock('@aws-sdk/client-s3', () => {
 vi.mock('@aws-sdk/s3-request-presigner', () => ({
   getSignedUrl: vi.fn().mockResolvedValue('https://signed-url.example.com'),
 }));
-
-import {
-  uploadFile,
-  downloadFile,
-  getPresignedUrl,
-  deleteFile,
-} from './r2.service.js';
 
 describe('R2 service', () => {
   beforeEach(() => {

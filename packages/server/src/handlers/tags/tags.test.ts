@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Request, Response } from 'express';
-import { ApiError } from 'app/utils/ApiError.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { createTagHandler, deleteTagHandler, getTagsHandler } from './tags.js';
 
 const mockGetUserTags = vi.fn();
 const mockCreateTag = vi.fn();
@@ -15,12 +16,6 @@ vi.mock('app/repositories/tags/tags.js', () => ({
 vi.mock('app/utils/logs/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
-
-import {
-  getTagsHandler,
-  createTagHandler,
-  deleteTagHandler,
-} from './tags.js';
 
 function makeReq(body = {}, params: Record<string, string> = {}): Request {
   return {

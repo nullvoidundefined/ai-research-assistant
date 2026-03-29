@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { generateConversationTitle } from './title-generator.js';
 
 const mocks = vi.hoisted(() => ({
   query: vi.fn(),
@@ -11,7 +13,9 @@ vi.mock('app/db/pool/pool.js', () => ({
 
 vi.mock('@anthropic-ai/sdk', () => {
   class MockAnthropic {
-    messages = { create: (...args: unknown[]) => mocks.messagesCreate(...args) };
+    messages = {
+      create: (...args: unknown[]) => mocks.messagesCreate(...args),
+    };
   }
   return { default: MockAnthropic };
 });
@@ -19,8 +23,6 @@ vi.mock('@anthropic-ai/sdk', () => {
 vi.mock('app/utils/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
-
-import { generateConversationTitle } from './title-generator.js';
 
 describe('generateConversationTitle', () => {
   beforeEach(() => {

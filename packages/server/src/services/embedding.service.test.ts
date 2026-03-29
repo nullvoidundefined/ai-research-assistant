@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { embed } from './embedding.service.js';
 
 // Use a holder object that vi.mock can reference via globalThis
 const mocks = vi.hoisted(() => {
@@ -18,8 +20,6 @@ vi.mock('voyageai', () => {
   };
 });
 
-import { embed } from './embedding.service.js';
-
 describe('embed', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -27,10 +27,7 @@ describe('embed', () => {
 
   it('returns embeddings for given texts', async () => {
     mocks.embed.mockResolvedValue({
-      data: [
-        { embedding: [0.1, 0.2, 0.3] },
-        { embedding: [0.4, 0.5, 0.6] },
-      ],
+      data: [{ embedding: [0.1, 0.2, 0.3] }, { embedding: [0.4, 0.5, 0.6] }],
     });
 
     const result = await embed(['hello', 'world']);

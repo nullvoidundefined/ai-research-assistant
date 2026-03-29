@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { vectorSearch } from './chunks.js';
 
 const mockQuery = vi.fn();
 vi.mock('app/db/pool/pool.js', () => ({
   query: (...args: unknown[]) => mockQuery(...args),
 }));
-
-import { vectorSearch } from './chunks.js';
 
 describe('vectorSearch', () => {
   beforeEach(() => {

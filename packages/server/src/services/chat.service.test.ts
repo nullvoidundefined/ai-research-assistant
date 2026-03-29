@@ -1,5 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Response } from 'express';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { handleChatStream } from './chat.service.js';
 
 const {
   mockMessagesCreate,
@@ -40,8 +42,7 @@ vi.mock('app/repositories/chunks/chunks.js', () => ({
 }));
 
 vi.mock('app/repositories/conversations/conversations.js', () => ({
-  getConversationById: (...args: unknown[]) =>
-    mockGetConversationById(...args),
+  getConversationById: (...args: unknown[]) => mockGetConversationById(...args),
 }));
 
 vi.mock('app/repositories/messages/messages.js', () => ({
@@ -51,15 +52,15 @@ vi.mock('app/repositories/messages/messages.js', () => ({
 }));
 
 vi.mock('app/config/bullmq.js', () => ({
-  conversationTitleQueue: { add: (...args: unknown[]) => mockQueueAdd(...args) },
+  conversationTitleQueue: {
+    add: (...args: unknown[]) => mockQueueAdd(...args),
+  },
   sourceIngestQueue: { add: vi.fn() },
 }));
 
 vi.mock('app/utils/logs/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
-
-import { handleChatStream } from './chat.service.js';
 
 function createMockRes(): Response & { writtenData: string[] } {
   const writtenData: string[] = [];
@@ -89,7 +90,9 @@ describe('handleChatStream', () => {
       'Content-Type',
       'text/event-stream',
     );
-    const errorEvent = res.writtenData.find((d) => d.includes('"type":"error"'));
+    const errorEvent = res.writtenData.find((d) =>
+      d.includes('"type":"error"'),
+    );
     expect(errorEvent).toBeTruthy();
     expect(res.end).toHaveBeenCalled();
   });
@@ -138,7 +141,9 @@ describe('handleChatStream', () => {
     const res = createMockRes();
     await handleChatStream('user-1', 'What is AI?', 'conv-1', undefined, res);
 
-    const tokenEvents = res.writtenData.filter((d) => d.includes('"type":"token"'));
+    const tokenEvents = res.writtenData.filter((d) =>
+      d.includes('"type":"token"'),
+    );
     expect(tokenEvents.length).toBeGreaterThan(0);
 
     const citationEvent = res.writtenData.find((d) =>
@@ -150,7 +155,10 @@ describe('handleChatStream', () => {
     expect(doneEvent).toBeTruthy();
 
     expect(mockSaveMessage).toHaveBeenCalledTimes(2);
-    expect(mockQueueAdd).toHaveBeenCalledWith('generate-title', expect.any(Object));
+    expect(mockQueueAdd).toHaveBeenCalledWith(
+      'generate-title',
+      expect.any(Object),
+    );
   });
 
   it('does not trigger title generation for non-first exchange', async () => {
@@ -193,7 +201,9 @@ describe('handleChatStream', () => {
     const res = createMockRes();
     await handleChatStream('user-1', 'Test', 'conv-1', undefined, res);
 
-    const errorEvent = res.writtenData.find((d) => d.includes('"type":"error"'));
+    const errorEvent = res.writtenData.find((d) =>
+      d.includes('"type":"error"'),
+    );
     expect(errorEvent).toBeTruthy();
     expect(res.end).toHaveBeenCalled();
   });

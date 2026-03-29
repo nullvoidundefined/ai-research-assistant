@@ -1,4 +1,7 @@
-import { sourceIngestQueue, conversationTitleQueue } from 'app/config/bullmq.js';
+import {
+  conversationTitleQueue,
+  sourceIngestQueue,
+} from 'app/config/bullmq.js';
 import { corsDevConfig } from 'app/config/corsConfig.js';
 import { redis } from 'app/config/redis.js';
 import pool, { query } from 'app/db/pool/pool.js';

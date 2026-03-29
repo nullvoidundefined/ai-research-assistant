@@ -1,6 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Request, Response } from 'express';
 import { ApiError } from 'app/utils/ApiError.js';
+import type { Request, Response } from 'express';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { login, logout, me, register } from './auth.js';
 
 const mockRegisterUser = vi.fn();
 const mockLoginUser = vi.fn();
@@ -15,8 +17,6 @@ vi.mock('app/services/auth.service.js', () => ({
 vi.mock('app/utils/logs/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
-
-import { register, login, logout, me } from './auth.js';
 
 function createMockReqRes(body = {}, session: Record<string, unknown> = {}) {
   const req = {

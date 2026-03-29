@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import type { ChunkWithSource } from '@research/common';
+import { describe, expect, it } from 'vitest';
+
 import { buildContextBlock, buildQASystemPrompt } from './qa-system.js';
 
 describe('buildQASystemPrompt', () => {
