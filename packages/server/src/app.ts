@@ -1,5 +1,7 @@
+import { sourceIngestQueue, conversationTitleQueue } from 'app/config/bullmq.js';
 import { corsDevConfig } from 'app/config/corsConfig.js';
-import { query } from 'app/db/pool/pool.js';
+import { redis } from 'app/config/redis.js';
+import pool, { query } from 'app/db/pool/pool.js';
 import { getPublicCollection } from 'app/handlers/collections/collections.js';
 import { errorHandler } from 'app/middleware/errorHandler/errorHandler.js';
 import { notFoundHandler } from 'app/middleware/notFoundHandler/notFoundHandler.js';
@@ -16,6 +18,7 @@ import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
 import helmet from 'helmet';
+import type { Server } from 'node:http';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -40,6 +43,20 @@ app.use(
   }),
 );
 app.use(requestLogger);
+
+// 30-second request timeout — exempt SSE streaming endpoints
+app.use((req, res, next) => {
+  if (
+    req.headers.accept === 'text/event-stream' ||
+    req.path.includes('/stream') ||
+    req.path.includes('/chat')
+  ) {
+    return next();
+  }
+  req.setTimeout(30_000);
+  res.setTimeout(30_000);
+  next();
+});
 
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
@@ -66,9 +83,44 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 export function startServer() {
-  app.listen(PORT, () => {
+  const server: Server = app.listen(PORT, () => {
     logger.info({ port: String(PORT) }, 'Server started');
   });
+
+  async function gracefulShutdown(signal: string) {
+    logger.info({ signal }, 'Received shutdown signal, closing gracefully');
+
+    server.close(() => {
+      logger.info('HTTP server closed');
+    });
+
+    try {
+      await sourceIngestQueue.close();
+      await conversationTitleQueue.close();
+      logger.info('BullMQ queues closed');
+    } catch (err) {
+      logger.error({ err }, 'Error closing BullMQ queues');
+    }
+
+    try {
+      await redis.quit();
+      logger.info('Redis connection closed');
+    } catch (err) {
+      logger.error({ err }, 'Error closing Redis connection');
+    }
+
+    try {
+      await pool.end();
+      logger.info('Database pool drained');
+    } catch (err) {
+      logger.error({ err }, 'Error draining database pool');
+    }
+
+    process.exit(0);
+  }
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
 export default app;
