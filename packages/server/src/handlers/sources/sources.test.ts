@@ -1,6 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Request, Response } from 'express';
-import { ApiError } from 'app/utils/ApiError.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import {
+  createSourceHandler,
+  deleteSourceHandler,
+  getSourceHandler,
+  getSourcesHandler,
+  reprocessSourceHandler,
+} from './sources.js';
 
 const mockCreateSource = vi.fn();
 const mockGetSourceById = vi.fn();
@@ -40,14 +47,6 @@ vi.mock('app/utils/logs/logger.js', () => ({
 vi.mock('uuid', () => ({
   v4: () => 'mock-uuid-1234',
 }));
-
-import {
-  createSourceHandler,
-  getSourcesHandler,
-  getSourceHandler,
-  deleteSourceHandler,
-  reprocessSourceHandler,
-} from './sources.js';
 
 function makeReq(
   body = {},

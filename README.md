@@ -18,14 +18,14 @@ ai-research-assistant/
 
 This app combines all patterns from Apps 1–6:
 
-| App | Pattern | Where used in App 7 |
-|-----|---------|---------------------|
-| App 1 | Structured extraction + Zod validation | Worker metadata extraction (title, author, summary) |
-| App 2 | SSE streaming + caching | `/chat` endpoint streams tokens to frontend |
-| App 3 | Tool calling + BullMQ async | `source-ingest` + `conversation-title` queues |
-| App 4 | RAG with pgvector + citations | Vector search on chunks, [N] citation markers |
-| App 5 | Multi-tenant + conversation summarization | Per-user scoping, summarize >8000 tokens |
-| App 6 | Real-time updates | Auto-refetch on processing sources |
+| App   | Pattern                                   | Where used in App 7                                 |
+| ----- | ----------------------------------------- | --------------------------------------------------- |
+| App 1 | Structured extraction + Zod validation    | Worker metadata extraction (title, author, summary) |
+| App 2 | SSE streaming + caching                   | `/chat` endpoint streams tokens to frontend         |
+| App 3 | Tool calling + BullMQ async               | `source-ingest` + `conversation-title` queues       |
+| App 4 | RAG with pgvector + citations             | Vector search on chunks, [N] citation markers       |
+| App 5 | Multi-tenant + conversation summarization | Per-user scoping, summarize >8000 tokens            |
+| App 6 | Real-time updates                         | Auto-refetch on processing sources                  |
 
 ## Stack
 
@@ -58,6 +58,7 @@ This app combines all patterns from Apps 1–6:
 ## Local Development Setup
 
 ### Prerequisites
+
 - Node.js 20+
 - pnpm 9+
 - PostgreSQL with pgvector extension
@@ -67,16 +68,19 @@ This app combines all patterns from Apps 1–6:
 - Voyage AI API key
 
 ### 1. Install dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 2. Build common package
+
 ```bash
 pnpm --filter @research/common build
 ```
 
 ### 3. Set up environment variables
+
 ```bash
 cp packages/server/.env.example packages/server/.env
 cp packages/worker/.env.example packages/worker/.env
@@ -85,12 +89,14 @@ cp packages/web-client/.env.example packages/web-client/.env.local
 ```
 
 ### 4. Run database migrations
+
 ```bash
 cd packages/server
 DATABASE_URL=postgres://... pnpm migrate
 ```
 
 ### 5. Start all services
+
 ```bash
 # Terminal 1: API server
 pnpm dev:server
@@ -103,6 +109,7 @@ pnpm dev:web
 ```
 
 ### URLs
+
 - Frontend: http://localhost:3000
 - API: http://localhost:3001
 - Health check: http://localhost:3001/health
@@ -150,6 +157,7 @@ GET /health
 ## Deployment
 
 Deploy on:
+
 - **API + Worker:** Railway (two services)
 - **Frontend:** Vercel
 - **Database:** Neon (PostgreSQL with pgvector)

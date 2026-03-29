@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
 import type { Request, Response } from 'express';
+import { describe, expect, it, vi } from 'vitest';
+
 import { notFoundHandler } from './notFoundHandler.js';
 
 describe('notFoundHandler middleware', () => {

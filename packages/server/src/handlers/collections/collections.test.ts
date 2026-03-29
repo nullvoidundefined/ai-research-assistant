@@ -1,6 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Request, Response } from 'express';
-import { ApiError } from 'app/utils/ApiError.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import {
+  addSourceToCollectionHandler,
+  createCollectionHandler,
+  deleteCollectionHandler,
+  getCollectionHandler,
+  getCollectionsHandler,
+  getPublicCollection,
+  shareCollectionHandler,
+} from './collections.js';
 
 const mockGetUserCollections = vi.fn();
 const mockCreateCollection = vi.fn();
@@ -33,18 +42,6 @@ vi.mock('app/repositories/collections/collections.js', () => ({
 vi.mock('app/utils/logs/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
-
-import {
-  getCollectionsHandler,
-  createCollectionHandler,
-  getCollectionHandler,
-  updateCollectionHandler,
-  deleteCollectionHandler,
-  addSourceToCollectionHandler,
-  removeSourceFromCollectionHandler,
-  shareCollectionHandler,
-  getPublicCollection,
-} from './collections.js';
 
 function makeReq(
   body = {},
@@ -97,10 +94,7 @@ describe('createCollectionHandler', () => {
     mockCreateCollection.mockResolvedValue(col);
 
     const res = makeRes();
-    await createCollectionHandler(
-      makeReq({ name: 'New Collection' }),
-      res,
-    );
+    await createCollectionHandler(makeReq({ name: 'New Collection' }), res);
 
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({ collection: col });
@@ -252,10 +246,7 @@ describe('getPublicCollection', () => {
     mockGetCollectionSources.mockResolvedValue(sources);
 
     const res = makeRes();
-    await getPublicCollection(
-      makeReq({}, { token: 'valid-token' }),
-      res,
-    );
+    await getPublicCollection(makeReq({}, { token: 'valid-token' }), res);
 
     expect(res.json).toHaveBeenCalledWith({ collection: col, sources });
   });

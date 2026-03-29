@@ -1,6 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Request, Response } from 'express';
-import { ApiError } from 'app/utils/ApiError.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import {
+  chatHandler,
+  createConversationHandler,
+  deleteConversationHandler,
+  getConversationHandler,
+  getConversationsHandler,
+} from './chat.js';
 
 const mockHandleChatStream = vi.fn();
 const mockGetUserConversations = vi.fn();
@@ -17,8 +24,7 @@ vi.mock('app/repositories/conversations/conversations.js', () => ({
   getUserConversations: (...args: unknown[]) =>
     mockGetUserConversations(...args),
   createConversation: (...args: unknown[]) => mockCreateConversation(...args),
-  getConversationById: (...args: unknown[]) =>
-    mockGetConversationById(...args),
+  getConversationById: (...args: unknown[]) => mockGetConversationById(...args),
   deleteConversation: (...args: unknown[]) => mockDeleteConversation(...args),
 }));
 
@@ -31,19 +37,7 @@ vi.mock('app/utils/logs/logger.js', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
-import {
-  chatHandler,
-  getConversationsHandler,
-  createConversationHandler,
-  getConversationHandler,
-  deleteConversationHandler,
-} from './chat.js';
-
-function makeReq(
-  body = {},
-  params = {},
-  sessionUserId = 'user-1',
-): Request {
+function makeReq(body = {}, params = {}, sessionUserId = 'user-1'): Request {
   return {
     body,
     params,

@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { getUserById, loginUser, registerUser } from './auth.service.js';
 
 const mockFindUserByEmail = vi.fn();
 const mockFindUserById = vi.fn();
@@ -9,8 +11,6 @@ vi.mock('app/repositories/auth/auth.js', () => ({
   findUserById: (...args: unknown[]) => mockFindUserById(...args),
   createUser: (...args: unknown[]) => mockCreateUser(...args),
 }));
-
-import { registerUser, loginUser, getUserById } from './auth.service.js';
 
 const fakeUser = {
   id: 'user-1',
@@ -30,7 +30,11 @@ describe('registerUser', () => {
     mockFindUserByEmail.mockResolvedValue(null);
     mockCreateUser.mockResolvedValue(fakeUser);
 
-    const result = await registerUser('test@example.com', 'password123', 'Test');
+    const result = await registerUser(
+      'test@example.com',
+      'password123',
+      'Test',
+    );
 
     expect(mockFindUserByEmail).toHaveBeenCalledWith('test@example.com');
     expect(mockCreateUser).toHaveBeenCalledOnce();
@@ -67,7 +71,8 @@ describe('loginUser', () => {
     // bcrypt hash of 'correctpassword'
     mockFindUserByEmail.mockResolvedValue({
       ...fakeUser,
-      password_hash: '$2a$12$LJ3m4ys3Gzl.TY6C6UqNOeX6PDMHjDj6F5HH3F3ShXFwlC3vXKlEi',
+      password_hash:
+        '$2a$12$LJ3m4ys3Gzl.TY6C6UqNOeX6PDMHjDj6F5HH3F3ShXFwlC3vXKlEi',
     });
 
     await expect(
