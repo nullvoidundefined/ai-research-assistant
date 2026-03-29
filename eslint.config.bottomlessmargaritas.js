@@ -1,4 +1,4 @@
-import { FlatCompat } from '@eslint/eslintrc';
+import babelParser from '@babel/eslint-parser';
 import tsEslintParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
@@ -7,23 +7,12 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
-import { dirname } from 'path';
 import tseslint from 'typescript-eslint';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({ baseDirectory: __dirname });
 
 export default tseslint.config([
   {
-    ignores: ['node_modules', '.next', 'out', 'build', '**/*.d.ts'],
+    ignores: ['build', 'dist', 'node_modules', '**/*.d.ts', '.turbo'],
   },
-  // Extend next/core-web-vitals; filter react-hooks to avoid plugin conflict below
-  ...compat
-    .extends('next/core-web-vitals', 'next/typescript')
-    .filter((config) => !config.plugins?.['react-hooks']),
   {
     linterOptions: {
       reportUnusedDisableDirectives: true,
@@ -35,7 +24,6 @@ export default tseslint.config([
     },
     rules: {
       'curly': 'error',
-      'import/no-anonymous-default-export': 'off',
       'no-console': ['warn', { allow: ['warn', 'info', 'error', 'group'] }],
       'no-implicit-globals': 'error',
       'no-param-reassign': ['error', { props: false }],
@@ -44,6 +32,13 @@ export default tseslint.config([
       'no-underscore-dangle': 'off',
       'no-unreachable': 'warn',
       'no-unused-expressions': 'error',
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       'no-useless-escape': 'off',
       'no-var': 'warn',
       'object-shorthand': ['error', 'always'],
@@ -58,8 +53,23 @@ export default tseslint.config([
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
     languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parser: babelParser,
+      parserOptions: {
+        requireConfigFile: false,
+      },
+    },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      ...react.configs.flat.recommended.languageOptions,
       ecmaVersion: 'latest',
       parser: tsEslintParser,
       parserOptions: {
@@ -69,6 +79,43 @@ export default tseslint.config([
         sourceType: 'module',
       },
     },
+    rules: {
+      '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        {
+          fixStyle: 'inline-type-imports',
+          prefer: 'type-imports',
+        },
+      ],
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-misused-promises': [
+        'warn',
+        {
+          checksVoidReturn: { attributes: false },
+        },
+      ],
+      '@typescript-eslint/no-require-imports': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unused-expressions': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      '@typescript-eslint/require-await': 'off',
+      'no-undef': 'off',
+      'no-var': 'warn',
+      'prefer-const': 'warn',
+    },
+  },
+  {
+    files: ['**/*.tsx'],
     plugins: {
       'jsx-a11y': jsxA11y,
       react,
@@ -78,28 +125,9 @@ export default tseslint.config([
       react: { version: 'detect' },
     },
     rules: {
-      '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
-      '@typescript-eslint/consistent-type-definitions': 'off',
-      '@typescript-eslint/consistent-type-imports': [
-        'warn',
-        { fixStyle: 'inline-type-imports', prefer: 'type-imports' },
-      ],
-      '@typescript-eslint/no-empty-object-type': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-misused-promises': [
-        'warn',
-        { checksVoidReturn: { attributes: false } },
-      ],
-      '@typescript-eslint/no-require-imports': 'warn',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
-      '@typescript-eslint/no-unused-expressions': 'warn',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
-      '@typescript-eslint/require-await': 'off',
-      'no-undef': 'off',
+      ...reactHooks.configs.recommended.rules,
+      ...react.configs.flat.recommended.rules,
+      ...jsxA11y.flatConfigs.recommended.rules,
       'jsx-a11y/anchor-is-valid': 'warn',
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/iframe-has-title': 'off',
@@ -107,8 +135,6 @@ export default tseslint.config([
       'jsx-a11y/no-autofocus': 'warn',
       'jsx-a11y/no-noninteractive-element-interactions': 'off',
       'jsx-a11y/no-static-element-interactions': 'off',
-      'no-var': 'warn',
-      'prefer-const': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/rules-of-hooks': 'warn',
       'react/display-name': 'warn',
@@ -116,10 +142,6 @@ export default tseslint.config([
       'react/no-unescaped-entities': 'warn',
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
-      'unused-imports/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
     },
   },
   {
@@ -131,7 +153,9 @@ export default tseslint.config([
       '**/*.test.tsx',
     ],
     languageOptions: {
-      globals: { ...globals.jest },
+      globals: {
+        ...globals.jest,
+      },
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

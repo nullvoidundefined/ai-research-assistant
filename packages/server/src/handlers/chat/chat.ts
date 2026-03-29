@@ -6,6 +6,7 @@ import {
 } from 'app/repositories/conversations/conversations.js';
 import { getConversationMessages } from 'app/repositories/messages/messages.js';
 import { handleChatStream } from 'app/services/chat.service.js';
+import { ApiError } from 'app/utils/ApiError.js';
 import { logger } from 'app/utils/logs/logger.js';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
@@ -20,10 +21,7 @@ export async function chatHandler(req: Request, res: Response): Promise<void> {
   const userId = req.session.userId!;
   const parsed = chatSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
   const { message, conversationId, collectionId } = parsed.data;
   await handleChatStream(userId, message, conversationId, collectionId, res);
@@ -39,7 +37,7 @@ export async function getConversationsHandler(
     res.json({ conversations });
   } catch (err) {
     logger.error({ err }, 'Get conversations failed');
-    res.status(500).json({ error: 'Failed to get conversations' });
+    throw ApiError.internal('Failed to get conversations');
   }
 }
 
@@ -54,7 +52,7 @@ export async function createConversationHandler(
     res.status(201).json({ conversation });
   } catch (err) {
     logger.error({ err }, 'Create conversation failed');
-    res.status(500).json({ error: 'Failed to create conversation' });
+    throw ApiError.internal('Failed to create conversation');
   }
 }
 
@@ -67,14 +65,14 @@ export async function getConversationHandler(
   try {
     const conversation = await getConversationById(id, userId);
     if (!conversation) {
-      res.status(404).json({ error: 'Conversation not found' });
-      return;
+      throw ApiError.notFound('Conversation not found');
     }
     const messages = await getConversationMessages(id);
     res.json({ conversation, messages });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Get conversation failed');
-    res.status(500).json({ error: 'Failed to get conversation' });
+    throw ApiError.internal('Failed to get conversation');
   }
 }
 
@@ -87,12 +85,12 @@ export async function deleteConversationHandler(
   try {
     const deleted = await deleteConversation(id, userId);
     if (!deleted) {
-      res.status(404).json({ error: 'Conversation not found' });
-      return;
+      throw ApiError.notFound('Conversation not found');
     }
     res.json({ message: 'Conversation deleted' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Delete conversation failed');
-    res.status(500).json({ error: 'Failed to delete conversation' });
+    throw ApiError.internal('Failed to delete conversation');
   }
 }
