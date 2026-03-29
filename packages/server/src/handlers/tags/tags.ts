@@ -3,6 +3,7 @@ import {
   deleteTag,
   getUserTags,
 } from 'app/repositories/tags/tags.js';
+import { ApiError } from 'app/utils/ApiError.js';
 import { logger } from 'app/utils/logs/logger.js';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
@@ -22,7 +23,7 @@ export async function getTagsHandler(
     res.json({ tags });
   } catch (err) {
     logger.error({ err }, 'Get tags failed');
-    res.status(500).json({ error: 'Failed to get tags' });
+    throw ApiError.internal('Failed to get tags');
   }
 }
 
@@ -33,17 +34,14 @@ export async function createTagHandler(
   const userId = req.session.userId!;
   const parsed = createTagSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
   try {
     const tag = await createTag(userId, parsed.data.name, parsed.data.color);
     res.status(201).json({ tag });
   } catch (err) {
     logger.error({ err }, 'Create tag failed');
-    res.status(500).json({ error: 'Failed to create tag' });
+    throw ApiError.internal('Failed to create tag');
   }
 }
 
@@ -56,12 +54,12 @@ export async function deleteTagHandler(
   try {
     const deleted = await deleteTag(id, userId);
     if (!deleted) {
-      res.status(404).json({ error: 'Tag not found' });
-      return;
+      throw ApiError.notFound('Tag not found');
     }
     res.json({ message: 'Tag deleted' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Delete tag failed');
-    res.status(500).json({ error: 'Failed to delete tag' });
+    throw ApiError.internal('Failed to delete tag');
   }
 }

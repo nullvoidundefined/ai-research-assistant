@@ -4,16 +4,14 @@ import {
   loginUser,
   registerUser,
 } from 'app/services/auth.service.js';
+import { ApiError } from 'app/utils/ApiError.js';
 import { logger } from 'app/utils/logs/logger.js';
 import type { Request, Response } from 'express';
 
 export async function register(req: Request, res: Response): Promise<void> {
   const parsed = registerSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
   const { email, password, name } = parsed.data;
   try {
@@ -25,20 +23,16 @@ export async function register(req: Request, res: Response): Promise<void> {
   } catch (err) {
     logger.error({ err }, 'Register failed');
     if (err instanceof Error && err.message === 'Email already in use') {
-      res.status(409).json({ error: err.message });
-    } else {
-      res.status(500).json({ error: 'Registration failed' });
+      throw new ApiError(409, 'CONFLICT', err.message);
     }
+    throw ApiError.internal('Registration failed');
   }
 }
 
 export async function login(req: Request, res: Response): Promise<void> {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
   const { email, password } = parsed.data;
   try {
@@ -47,7 +41,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     res.json({ user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
     logger.error({ err }, 'Login failed');
-    res.status(401).json({ error: 'Invalid email or password' });
+    throw ApiError.unauthorized('Invalid email or password');
   }
 }
 
@@ -55,7 +49,9 @@ export async function logout(req: Request, res: Response): Promise<void> {
   req.session.destroy((err) => {
     if (err) {
       logger.error({ err }, 'Session destroy failed');
-      res.status(500).json({ error: 'Logout failed' });
+      res
+        .status(500)
+        .json({ error: 'INTERNAL_ERROR', message: 'Logout failed' });
       return;
     }
     res.clearCookie('sid');
@@ -66,18 +62,17 @@ export async function logout(req: Request, res: Response): Promise<void> {
 export async function me(req: Request, res: Response): Promise<void> {
   const userId = req.session.userId;
   if (!userId) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
+    throw ApiError.unauthorized();
   }
   try {
     const user = await getUserById(userId);
     if (!user) {
-      res.status(404).json({ error: 'User not found' });
-      return;
+      throw ApiError.notFound('User not found');
     }
     res.json({ user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Get me failed');
-    res.status(500).json({ error: 'Failed to get user' });
+    throw ApiError.internal('Failed to get user');
   }
 }
