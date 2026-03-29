@@ -12,6 +12,7 @@ import {
 } from 'app/repositories/tags/tags.js';
 import { createSourceSchema } from 'app/schemas/source.js';
 import { deleteFile, uploadFile } from 'app/services/r2.service.js';
+import { ApiError } from 'app/utils/ApiError.js';
 import { logger } from 'app/utils/logs/logger.js';
 import type { Request, Response } from 'express';
 import multer from 'multer';
@@ -36,10 +37,7 @@ export async function createSourceHandler(
 
   const parsed = createSourceSchema.safeParse(body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
 
   const { type, url, content } = parsed.data;
@@ -50,8 +48,7 @@ export async function createSourceHandler(
     if (type === 'pdf') {
       const file = req.file;
       if (!file) {
-        res.status(400).json({ error: 'PDF file is required' });
-        return;
+        throw ApiError.badRequest('PDF file is required');
       }
       const sourceId = uuidv4();
       const r2Key = `sources/${userId}/${sourceId}/${file.originalname}`;
@@ -66,8 +63,7 @@ export async function createSourceHandler(
       });
     } else if (type === 'url') {
       if (!url) {
-        res.status(400).json({ error: 'URL is required for url type' });
-        return;
+        throw ApiError.badRequest('URL is required for url type');
       }
       source = await createSource({
         userId,
@@ -77,8 +73,7 @@ export async function createSourceHandler(
       });
     } else {
       if (!content) {
-        res.status(400).json({ error: 'Content is required for note type' });
-        return;
+        throw ApiError.badRequest('Content is required for note type');
       }
       source = await createSource({
         userId,
@@ -92,8 +87,9 @@ export async function createSourceHandler(
 
     res.status(201).json({ source });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Create source failed');
-    res.status(500).json({ error: 'Failed to create source' });
+    throw ApiError.internal('Failed to create source');
   }
 }
 
@@ -115,7 +111,7 @@ export async function getSourcesHandler(
     res.json({ sources });
   } catch (err) {
     logger.error({ err }, 'Get sources failed');
-    res.status(500).json({ error: 'Failed to get sources' });
+    throw ApiError.internal('Failed to get sources');
   }
 }
 
@@ -129,13 +125,13 @@ export async function getSourceHandler(
   try {
     const source = await getSourceById(id, userId);
     if (!source) {
-      res.status(404).json({ error: 'Source not found' });
-      return;
+      throw ApiError.notFound('Source not found');
     }
     res.json({ source });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Get source failed');
-    res.status(500).json({ error: 'Failed to get source' });
+    throw ApiError.internal('Failed to get source');
   }
 }
 
@@ -149,8 +145,7 @@ export async function deleteSourceHandler(
   try {
     const source = await getSourceById(id, userId);
     if (!source) {
-      res.status(404).json({ error: 'Source not found' });
-      return;
+      throw ApiError.notFound('Source not found');
     }
 
     if (source.r2_key) {
@@ -161,13 +156,13 @@ export async function deleteSourceHandler(
 
     const deleted = await deleteSource(id, userId);
     if (!deleted) {
-      res.status(404).json({ error: 'Source not found' });
-      return;
+      throw ApiError.notFound('Source not found');
     }
     res.json({ message: 'Source deleted' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Delete source failed');
-    res.status(500).json({ error: 'Failed to delete source' });
+    throw ApiError.internal('Failed to delete source');
   }
 }
 
@@ -181,16 +176,16 @@ export async function reprocessSourceHandler(
   try {
     const source = await getSourceById(id, userId);
     if (!source) {
-      res.status(404).json({ error: 'Source not found' });
-      return;
+      throw ApiError.notFound('Source not found');
     }
 
     await updateSourceStatus(id, 'pending');
     await sourceIngestQueue.add('ingest', { sourceId: id, userId });
     res.json({ message: 'Source reprocessing started' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Reprocess source failed');
-    res.status(500).json({ error: 'Failed to reprocess source' });
+    throw ApiError.internal('Failed to reprocess source');
   }
 }
 
@@ -203,21 +198,20 @@ export async function addTagToSourceHandler(
   const { tagId } = req.body;
 
   if (!tagId) {
-    res.status(400).json({ error: 'tagId is required' });
-    return;
+    throw ApiError.badRequest('tagId is required');
   }
 
   try {
     const source = await getSourceById(id, userId);
     if (!source) {
-      res.status(404).json({ error: 'Source not found' });
-      return;
+      throw ApiError.notFound('Source not found');
     }
     await addTagToSource(id, tagId);
     res.json({ message: 'Tag added' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Add tag to source failed');
-    res.status(500).json({ error: 'Failed to add tag' });
+    throw ApiError.internal('Failed to add tag');
   }
 }
 
@@ -231,13 +225,13 @@ export async function removeTagFromSourceHandler(
   try {
     const source = await getSourceById(id, userId);
     if (!source) {
-      res.status(404).json({ error: 'Source not found' });
-      return;
+      throw ApiError.notFound('Source not found');
     }
     await removeTagFromSource(id, tagId);
     res.json({ message: 'Tag removed' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Remove tag from source failed');
-    res.status(500).json({ error: 'Failed to remove tag' });
+    throw ApiError.internal('Failed to remove tag');
   }
 }

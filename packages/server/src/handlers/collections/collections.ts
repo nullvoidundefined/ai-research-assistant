@@ -10,6 +10,7 @@ import {
   setShareToken,
   updateCollection,
 } from 'app/repositories/collections/collections.js';
+import { ApiError } from 'app/utils/ApiError.js';
 import { logger } from 'app/utils/logs/logger.js';
 import { randomBytes } from 'crypto';
 import type { Request, Response } from 'express';
@@ -36,7 +37,7 @@ export async function getCollectionsHandler(
     res.json({ collections });
   } catch (err) {
     logger.error({ err }, 'Get collections failed');
-    res.status(500).json({ error: 'Failed to get collections' });
+    throw ApiError.internal('Failed to get collections');
   }
 }
 
@@ -47,10 +48,7 @@ export async function createCollectionHandler(
   const userId = req.session.userId!;
   const parsed = createCollectionSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
   try {
     const collection = await createCollection(
@@ -61,7 +59,7 @@ export async function createCollectionHandler(
     res.status(201).json({ collection });
   } catch (err) {
     logger.error({ err }, 'Create collection failed');
-    res.status(500).json({ error: 'Failed to create collection' });
+    throw ApiError.internal('Failed to create collection');
   }
 }
 
@@ -74,14 +72,14 @@ export async function getCollectionHandler(
   try {
     const collection = await getCollectionById(id, userId);
     if (!collection) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     const sources = await getCollectionSources(id);
     res.json({ collection, sources });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Get collection failed');
-    res.status(500).json({ error: 'Failed to get collection' });
+    throw ApiError.internal('Failed to get collection');
   }
 }
 
@@ -93,21 +91,18 @@ export async function updateCollectionHandler(
   const { id } = req.params;
   const parsed = updateCollectionSchema.safeParse(req.body);
   if (!parsed.success) {
-    res
-      .status(400)
-      .json({ error: 'Validation failed', issues: parsed.error.issues });
-    return;
+    throw ApiError.badRequest('Validation failed', parsed.error.issues);
   }
   try {
     const collection = await updateCollection(id, userId, parsed.data);
     if (!collection) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     res.json({ collection });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Update collection failed');
-    res.status(500).json({ error: 'Failed to update collection' });
+    throw ApiError.internal('Failed to update collection');
   }
 }
 
@@ -120,13 +115,13 @@ export async function deleteCollectionHandler(
   try {
     const deleted = await deleteCollection(id, userId);
     if (!deleted) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     res.json({ message: 'Collection deleted' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Delete collection failed');
-    res.status(500).json({ error: 'Failed to delete collection' });
+    throw ApiError.internal('Failed to delete collection');
   }
 }
 
@@ -138,20 +133,19 @@ export async function addSourceToCollectionHandler(
   const { id } = req.params;
   const { sourceId } = req.body;
   if (!sourceId) {
-    res.status(400).json({ error: 'sourceId is required' });
-    return;
+    throw ApiError.badRequest('sourceId is required');
   }
   try {
     const collection = await getCollectionById(id, userId);
     if (!collection) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     await addSourceToCollection(id, sourceId);
     res.json({ message: 'Source added to collection' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Add source to collection failed');
-    res.status(500).json({ error: 'Failed to add source to collection' });
+    throw ApiError.internal('Failed to add source to collection');
   }
 }
 
@@ -164,14 +158,14 @@ export async function removeSourceFromCollectionHandler(
   try {
     const collection = await getCollectionById(id, userId);
     if (!collection) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     await removeSourceFromCollection(id, sourceId);
     res.json({ message: 'Source removed from collection' });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Remove source from collection failed');
-    res.status(500).json({ error: 'Failed to remove source from collection' });
+    throw ApiError.internal('Failed to remove source from collection');
   }
 }
 
@@ -184,15 +178,15 @@ export async function shareCollectionHandler(
   try {
     const collection = await getCollectionById(id, userId);
     if (!collection) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     const token = randomBytes(32).toString('hex');
     const updated = await setShareToken(id, userId, token);
     res.json({ collection: updated, shareUrl: `/share/${token}` });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Share collection failed');
-    res.status(500).json({ error: 'Failed to share collection' });
+    throw ApiError.internal('Failed to share collection');
   }
 }
 
@@ -204,13 +198,13 @@ export async function getPublicCollection(
   try {
     const collection = await getCollectionByShareToken(token);
     if (!collection) {
-      res.status(404).json({ error: 'Collection not found' });
-      return;
+      throw ApiError.notFound('Collection not found');
     }
     const sources = await getCollectionSources(collection.id);
     res.json({ collection, sources });
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     logger.error({ err }, 'Get public collection failed');
-    res.status(500).json({ error: 'Failed to get collection' });
+    throw ApiError.internal('Failed to get collection');
   }
 }
