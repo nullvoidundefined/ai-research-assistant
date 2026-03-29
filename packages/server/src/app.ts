@@ -20,6 +20,30 @@ import session from 'express-session';
 import helmet from 'helmet';
 import type { Server } from 'node:http';
 
+function validateEnv(): void {
+  const required = [
+    'DATABASE_URL',
+    'SESSION_SECRET',
+    'ANTHROPIC_API_KEY',
+    'VOYAGE_API_KEY',
+  ];
+  if (process.env.NODE_ENV === 'production') {
+    required.push(
+      'CORS_ORIGIN',
+      'REDIS_URL',
+      'CLOUDFLARE_ACCOUNT_ID',
+      'CLOUDFLARE_R2_BUCKET',
+      'CLOUDFLARE_R2_ACCESS_KEY_ID',
+      'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
+    );
+  }
+  const missing = required.filter((key) => !process.env[key]);
+  if (missing.length > 0) {
+    logger.error({ missing }, 'Missing required environment variables');
+    process.exit(1);
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT ?? 3001;
 
@@ -83,6 +107,8 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 export function startServer() {
+  validateEnv();
+
   const server: Server = app.listen(PORT, () => {
     logger.info({ port: String(PORT) }, 'Server started');
   });
