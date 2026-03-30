@@ -53,15 +53,15 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
+      - name: Build
+        run: pnpm --filter @research/common build && pnpm --filter server build && pnpm --filter worker build
+
       - name: Test
-        run: |
-          cd packages/common && npx vitest run && cd ../..
-          cd packages/server && npx vitest run && cd ../..
-          cd packages/worker && npx vitest run && cd ../..
+        run: pnpm test
         env:
           DATABASE_URL: postgres://test:test@localhost:5432/test
           REDIS_URL: redis://localhost:6379
           NODE_ENV: test
           SESSION_SECRET: test-secret
+          CSRF_SECRET: test-csrf-secret
           ANTHROPIC_API_KEY: sk-ant-test
-          VOYAGE_API_KEY: pa-test

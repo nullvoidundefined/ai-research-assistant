@@ -9,7 +9,9 @@
     "lint": "eslint --config ../../eslint.config.bottomlessmargaritas.js .",
     "lint:fix": "eslint --config ../../eslint.config.bottomlessmargaritas.js . --fix",
     "format": "prettier --config ../../prettier.config.bottomlessmargaritas.mjs --write .",
-    "format:check": "prettier --config ../../prettier.config.bottomlessmargaritas.mjs --check ."
+    "format:check": "prettier --config ../../prettier.config.bottomlessmargaritas.mjs --check .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
@@ -22,6 +24,7 @@
     "prettier": "^3.8.1",
     "tsup": "^8.0.2",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^8.56.1"
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^3"
   }
 }
