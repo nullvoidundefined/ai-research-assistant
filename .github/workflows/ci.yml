@@ -56,12 +56,27 @@ jobs:
       - name: Build
         run: pnpm --filter @research/common build && pnpm --filter server build && pnpm --filter worker build
 
-      - name: Test
+      - name: Unit tests
         run: pnpm test
         env:
           DATABASE_URL: postgres://test:test@localhost:5432/test
           REDIS_URL: redis://localhost:6379
           NODE_ENV: test
           SESSION_SECRET: test-secret
-          CSRF_SECRET: test-csrf-secret
           ANTHROPIC_API_KEY: sk-ant-test
+
+      - name: Run migrations
+        run: pnpm --filter server migrate
+        env:
+          DATABASE_URL: postgres://test:test@localhost:5432/test
+
+      - name: Integration tests
+        run: pnpm --filter server run test:integration
+        env:
+          DATABASE_URL: postgres://test:test@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+          SESSION_SECRET: test-secret
+          ANTHROPIC_API_KEY: sk-ant-test
+          VOYAGE_API_KEY: test-voyage-key
+          CORS_ORIGIN: http://localhost:3000

@@ -152,4 +152,5 @@ export function startServer() {
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
+export { app };
 export default app;
